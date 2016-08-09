@@ -102,6 +102,12 @@
       <DependentUpon>PhotosPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Source\AddImageButton.xaml.cs">
+      <DependentUpon>AddImageButton.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Source\CloseAnimation.xaml.cs">
+      <DependentUpon>CloseAnimation.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Source\CompositionImage.cs" />
     <Compile Include="Source\ImageLoader.cs" />
     <Compile Include="Source\Ink.cs" />
@@ -119,9 +125,11 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Assets\Appear_Image_icon.png" />
+    <Content Include="Assets\Close.png" />
     <Content Include="Assets\Hand_icon.png" />
     <Content Include="Assets\irtBackground.jpg" />
     <Content Include="Assets\qr.png" />
+    <Content Include="Assets\qrCode.jpg" />
     <Content Include="colors.jpg" />
     <Content Include="nature.jpeg" />
     <Content Include="Properties\Default.rd.xml" />
@@ -144,6 +152,14 @@
       <SubType>Designer</SubType>
     </Page>
     <Page Include="PhotosPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Source\AddImageButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Source\CloseAnimation.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

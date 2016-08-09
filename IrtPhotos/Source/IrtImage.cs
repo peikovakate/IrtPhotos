@@ -12,8 +12,8 @@ using Windows.UI;
 using Windows.UI.Composition;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Hosting;
-
-
+using Windows.UI.Xaml.Media.Animation;
+using Windows.Foundation;
 
 namespace IrtPhotos.Source
 {
@@ -22,10 +22,10 @@ namespace IrtPhotos.Source
         private readonly CanvasControl _canvasImage;
         private Canvas _canvas;
         private readonly OppositeDirection _direction;
-        private readonly CompositeTransform _transform;
+        private  CompositeTransform _transform;
         private CanvasBitmap _bitmap;
         private CompositeEffect _effect;
-        private float blurAmount = 10;
+        private float blurAmount = 40;
         public int I { get; set; }
         private readonly Grid _backgroundGrid;
         private const double K = 0.5;
@@ -33,6 +33,11 @@ namespace IrtPhotos.Source
         private string _link;
         private Ink ink;
         private const int DefaultWidth = 800;
+
+        public Canvas getCanvas()
+        {
+            return _canvas;
+        }
 
         public IrtImage(Grid back)
         {
@@ -42,6 +47,7 @@ namespace IrtPhotos.Source
             _transform = new CompositeTransform();
 
             _canvas = new Canvas { ManipulationMode = ManipulationModes.All };
+
             //manipulations
             _canvas.ManipulationStarting += Canvas_ManipulationStarting;
             _canvas.ManipulationCompleted += Canvas_ManipulationCompleted;
@@ -53,7 +59,7 @@ namespace IrtPhotos.Source
         }
 
         private CompositionImage image;
-        public void LoadImage(string link)
+        public void LoadImage(string link, Storyboard imageAppearence)
         {
             _link = link;
             
@@ -79,8 +85,18 @@ namespace IrtPhotos.Source
             //Canvas.SetLeft(image, 10);
             //_canvas.Children.Add(image);
             _backgroundGrid.Children.Add(_canvas);
-            
-            
+            _canvas.RenderTransformOrigin = new Point(0.5, 0.5);
+            imageAppearence.Completed += ImageAppearence_Completed;
+            Storyboard.SetTarget(imageAppearence.Children[0], _canvas);
+            Storyboard.SetTarget(imageAppearence.Children[1], _canvas);
+            Storyboard.SetTarget(imageAppearence.Children[2], _canvas);
+
+        }
+
+        private void ImageAppearence_Completed(object sender, object e)
+        {
+            _transform = new CompositeTransform();
+            _canvas.RenderTransform = _transform;
         }
 
         private void _canvasImage_Draw(CanvasControl sender, CanvasDrawEventArgs args)
@@ -101,7 +117,8 @@ namespace IrtPhotos.Source
             var shadowEffect = new ShadowEffect
             {
                 Source = scaleEffect,
-                BlurAmount = blurAmount
+                BlurAmount = blurAmount,
+                ShadowColor = Color.FromArgb(127, 0, 0, 0)
             };
 
             _effect = new CompositeEffect
@@ -179,10 +196,10 @@ namespace IrtPhotos.Source
             }
             if (_transform.ScaleX * e.Delta.Scale >= 0.2 && _transform.ScaleX * e.Delta.Scale <= 4)
             {
-                _scale *= e.Delta.Scale;
+               //_scale *= e.Delta.Scale;
                 _transform.ScaleX *= e.Delta.Scale;
                 _transform.ScaleY *= e.Delta.Scale;
-                _canvasImage.Invalidate();
+                //_canvasImage.Invalidate();
             }
             _transform.Rotation += e.Delta.Rotation;
         }
@@ -217,12 +234,12 @@ namespace IrtPhotos.Source
             imageVisual.Shadow = shadow;
         }
 
-        private const float borderWidth = 20;
+        private const float borderWidth = 80;
         async Task CreateResourcesAsync(CanvasControl sender)
         {
             _bitmap = await CanvasBitmap.LoadAsync(sender, new Uri(_link));
-            _canvas.Width = _bitmap.Size.Width * _scale + blurAmount * 6 + borderWidth*2;
-            _canvas.Height = _bitmap.Size.Height * _scale + blurAmount * 6 + borderWidth*2;
+            _canvas.Width = _bitmap.Size.Width * _scale + blurAmount * 2 + borderWidth*2;
+            _canvas.Height = _bitmap.Size.Height * _scale + blurAmount * 2 + borderWidth*2;
             _canvasImage.Width = _canvas.Width;
             _canvasImage.Height = _canvas.Height;
             _transform.CenterX = _canvas.Width / 2;

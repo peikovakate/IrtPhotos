@@ -13,6 +13,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using IrtPhotos.Source;
+using Windows.UI.Xaml.Media.Animation;
 
 
 // The Blank Page item template is documented at https://go.microsoft.com/fwlink/?LinkId=234238
@@ -24,35 +25,30 @@ namespace IrtPhotos
     {
         private List<IrtImage> _images;
         private readonly string _url;
-        private static string _link1 = "ms-appx:///nature.jpeg";
-        private static string _link2 = "ms-appx:///colors.jpg";
-        private static string _link3 = "ms-appx:///sailboat.jpg";
+        private static string[] _link = { "ms-appx:///nature.jpeg", "ms-appx:///colors.jpg", "ms-appx:///sailboat.jpg" };
         private int i = 0;
+
 
         public PhotosPage()
         {
             this.InitializeComponent();
+            
+            AddImage(_link[0]);
+            imageAppearence.SpeedRatio = 2;
+            appearence.SpeedRatio = 2;
+            imageAppearence.Begin();
+           
+            appearence.Begin();
         }
 
-        private void AddImage2_Click(object sender, RoutedEventArgs e)
-        {
-            AddImage(_link2);
-        }
 
-        private void AddImage1_Click(object sender, RoutedEventArgs e)
-        {
-            AddImage(_link1);
-        }
-        private void AddImage3_Click(object sender, RoutedEventArgs e)
-        {
-            AddImage(_link3);
-        }
 
         private void AddImage(string link)
         {
             i++;
             var image = new IrtImage(BackgroundGrid);
-            image.LoadImage(link);
+            image.LoadImage(link, imageAppearence);
+            
 
         }
 

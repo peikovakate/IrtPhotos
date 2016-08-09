@@ -118,6 +118,7 @@
     <None Include="IrtPhotos_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Appear_Image_icon.png" />
     <Content Include="Assets\Hand_icon.png" />
     <Content Include="Assets\irtBackground.jpg" />
     <Content Include="Assets\qr.png" />

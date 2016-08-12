@@ -89,6 +89,7 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <Content Include="Assets\GothaProBol.otf" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -105,17 +106,15 @@
     <Compile Include="Source\AddImageButton.xaml.cs">
       <DependentUpon>AddImageButton.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Source\AppearingDisapearingAnimations.xaml.cs">
+      <DependentUpon>AppearingDisapearingAnimations.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Source\CloseAnimation.xaml.cs">
       <DependentUpon>CloseAnimation.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Source\CompositionImage.cs" />
-    <Compile Include="Source\ImageLoader.cs" />
     <Compile Include="Source\Ink.cs" />
     <Compile Include="Source\IrtImage.cs" />
-    <Compile Include="Source\ManagedSurface.cs" />
     <Compile Include="Source\OppositeDirection.cs" />
-    <Compile Include="Source\SurfaceLoader.cs" />
-    <Compile Include="Source\VisualTreeHelperExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <AppxManifest Include="Package.appxmanifest">
@@ -156,6 +155,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Source\AddImageButton.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Source\AppearingDisapearingAnimations.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

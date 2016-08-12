@@ -29,7 +29,7 @@
         </Storyboard>
     </UserControl.Resources>
     <Grid>
-        <Image x:Name="image" Source="../Assets/Close.png" Width="100" Height="100" RenderTransformOrigin="0.5,0.5" >
+        <Image x:Name="image" Source="../Assets/Close.png" Width="500" Height="500" RenderTransformOrigin="0.5,0.5" >
             <Image.RenderTransform>
                 <CompositeTransform/>
             </Image.RenderTransform>

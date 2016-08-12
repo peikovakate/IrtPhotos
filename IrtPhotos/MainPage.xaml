@@ -90,12 +90,18 @@
                     <PowerEase EasingMode="EaseIn"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <DoubleAnimation Duration="0:0:1" To="1" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
+            <DoubleAnimation Duration="0:0:1" To="1.5" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
                 <DoubleAnimation.EasingFunction>
                     <PowerEase EasingMode="EaseIn"/>
                 </DoubleAnimation.EasingFunction>
             </DoubleAnimation>
-            <ColorAnimation Duration="0:0:1" To="#FFAB0207" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
+            <DoubleAnimation Duration="0:0:1" To="1.5" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
+                <DoubleAnimation.EasingFunction>
+                    <PowerEase EasingMode="EaseIn"/>
+                </DoubleAnimation.EasingFunction>
+            </DoubleAnimation>
+
+            <ColorAnimation Duration="0:0:1" To="White" Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
                 <ColorAnimation.EasingFunction>
                     <PowerEase EasingMode="EaseIn"/>
                 </ColorAnimation.EasingFunction>
@@ -108,11 +114,7 @@
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
             <DoubleAnimation Duration="0:0:1" To="0" Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="image" d:IsOptimized="True"/>
-            <DoubleAnimation Duration="0:0:1" To="1" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="rectangle1" d:IsOptimized="True">
-                <DoubleAnimation.EasingFunction>
-                    <PowerEase EasingMode="EaseIn"/>
-                </DoubleAnimation.EasingFunction>
-            </DoubleAnimation>
+
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="textBlock">
                 <DiscreteObjectKeyFrame KeyTime="0:0:1">
                     <DiscreteObjectKeyFrame.Value>
@@ -127,6 +129,7 @@
                     </DiscreteObjectKeyFrame.Value>
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
+       
 
 
         </Storyboard>
@@ -182,25 +185,20 @@
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="rectangle1">
                 <SplineDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="rectangle1">
+                <SplineDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
+            </DoubleAnimationUsingKeyFrames>
             <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="rectangle1">
                 <SplineColorKeyFrame KeyTime="0:0:1" Value="Black"/>
             </ColorAnimationUsingKeyFrames>
-            <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="image">
-                <DiscreteObjectKeyFrame KeyTime="0:0:1">
-                    <DiscreteObjectKeyFrame.Value>
-                        <Visibility>Visible</Visibility>
-                    </DiscreteObjectKeyFrame.Value>
-                </DiscreteObjectKeyFrame>
-            </ObjectAnimationUsingKeyFrames>
+
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="qrImage">
                 <SplineDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
             <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Opacity)" Storyboard.TargetName="textBlock">
                 <SplineDoubleKeyFrame KeyTime="0:0:1" Value="0"/>
             </DoubleAnimationUsingKeyFrames>
-            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="rectangle1">
-                <SplineDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
-            </DoubleAnimationUsingKeyFrames>
+
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="textBlock">
                 <DiscreteObjectKeyFrame KeyTime="0:0:1">
                     <DiscreteObjectKeyFrame.Value>
@@ -209,12 +207,13 @@
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="qrImage">
-                <DiscreteObjectKeyFrame KeyTime="0:0:1">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.1">
                     <DiscreteObjectKeyFrame.Value>
                         <Visibility>Collapsed</Visibility>
                     </DiscreteObjectKeyFrame.Value>
                 </DiscreteObjectKeyFrame>
             </ObjectAnimationUsingKeyFrames>
+
         </Storyboard>
 
     </Page.Resources>
@@ -259,12 +258,12 @@
             </Rectangle.RenderTransform>
         </Rectangle>
 
-        <Image x:Name="image" Source="Assets/Hand_icon.png" Stretch="Uniform" Width="125" Height="125" PointerPressed="startAnimation" d:IsLocked="True"/>
-        <TextBlock x:Name="textBlock"  FontSize="24" Foreground="White" Width="300" Height="100" Margin="0,200,0,0" TextAlignment="Center" Visibility="Collapsed" d:IsLocked="True">
+        <Image x:Name="image" Source="Assets/Hand_icon.png" Stretch="Uniform" Width="125" Height="125" PointerPressed="startAnimation"/>
+        <TextBlock x:Name="textBlock"  FontSize="24" Foreground="Black" Width="300" Height="100" Margin="0,200,0,0" TextAlignment="Center" Visibility="Collapsed" FontFamily="Assets/GothaProBol.otf#Gotham Pro">
             <Run Text="SCAN TO LOAD"/>
             <LineBreak/>
             <Run Text="IMAGE"/>
         </TextBlock>
-        <Image x:Name="qrImage"  Source="Assets/qr.png" Stretch="Uniform" Margin="0, 0, 0, 50"  Width="150" Height="150" Visibility="Collapsed" PointerPressed="goToSecondPage"/>
+        <Image x:Name="qrImage"  Source="Assets/qrCode.jpg" Stretch="Uniform" Margin="0, 0, 0, 50"  Width="150" Height="150" Visibility="Collapsed" PointerPressed="goToSecondPage"/>
     </Grid>
 </Page>

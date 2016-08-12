@@ -33,7 +33,17 @@ namespace IrtPhotos.Source
             this.RenderTransformOrigin = new Point(0.5, 0.5);
             this.RenderTransform = _transform;
             this.ManipulationDelta += AddImageButton_ManipulationDelta;
+            this.ManipulationCompleted += AddImageButton_ManipulationCompleted;
         }
+
+        private void AddImageButton_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
+        {
+            if (e.Container == null) return;
+            _direction.X = false;
+            _direction.Y = false;
+        }
+
+        bool isQr = false;
 
         private void AddImageButton_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -91,17 +101,30 @@ namespace IrtPhotos.Source
             }
         }
 
-        private void addPressed(object sender, PointerRoutedEventArgs e)
+        private void addPressed(object sender, TappedRoutedEventArgs e)
         {
-            turnToQr.Begin();
+            // scanAnimation.Stop();
+            turnToButton.Stop();
+            turnToQr.Stop();
+            if (isQr)
+            {
+                turnToButton.Begin();
+                isQr = false;
+            }
+            else
+            {
+                turnToQr.Begin();
+                isQr = true;
+            }
+
         }
+
 
         private void turnToQr_Completed(object sender, object e)
         {
-            scanAnimation.Begin();
+           // scanAnimation.Begin();
         }
 
-        
 
     }
 }

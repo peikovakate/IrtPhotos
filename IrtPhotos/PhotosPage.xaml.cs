@@ -32,8 +32,12 @@ namespace IrtPhotos
         public PhotosPage()
         {
             this.InitializeComponent();
+           
             addImButton._backgroundGrid = BackgroundGrid;
             addImButton.DoubleTapped += AddImButton_DoubleTapped;
+            var transform = (CompositeTransform)(addImButton.RenderTransform);
+            transform.TranslateX = -1000;
+
             AddImage(_link[0]);
 
         }
@@ -41,22 +45,17 @@ namespace IrtPhotos
         private void AddImButton_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
         {
             Random r = new Random();
+            
             AddImage(_link[r.Next(0, 2)]);
         }
 
         private void AddImage(string link)
         {    
-            appearence.Begin();
+          
             i++;
             var image = new IrtImage(BackgroundGrid);
-            Storyboard imageApp, imageDel, appear;
-            appear = (Storyboard)this.Resources["appearence"];
-            imageApp = (Storyboard)this.Resources["imageAppearence"];
-            imageDel = (Storyboard)this.Resources["imageDeleting"];
-            appear.SpeedRatio = 2;
-            imageApp.SpeedRatio = 2;
-            imageDel.SpeedRatio = 2;
-            image.LoadImage(link, imageApp, imageDel);
+            image.LoadImage(link);
+            image.I = i;
         }
 
     }

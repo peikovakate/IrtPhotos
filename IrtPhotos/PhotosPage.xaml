@@ -18,9 +18,10 @@
         <Grid.Background>
             <ImageBrush Stretch="Fill" ImageSource="Assets/irtBackground.jpg"/>
         </Grid.Background>
-        
+        <Grid x:Name="PhotosGrid"></Grid>
         <s:AddImageButton x:Name="addImButton"/>
-     
-
     </Grid>
+
+
+
 </Page>

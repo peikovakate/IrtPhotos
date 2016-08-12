@@ -11,7 +11,6 @@
     d:DesignHeight="200"
     d:DesignWidth="200">
     <UserControl.Resources>
-
         <Storyboard x:Name="turnToQr" AutoReverse="False">
             <DoubleAnimation Duration="0:0:1" To="2" Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="grid" d:IsOptimized="True">
                 <DoubleAnimation.EasingFunction>
@@ -75,12 +74,36 @@
                 <EasingDoubleKeyFrame KeyTime="0:0:1" Value="1"/>
             </DoubleAnimationUsingKeyFrames>
         </Storyboard>
+        <Storyboard x:Name="attention" AutoReverse="True">
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleX)" Storyboard.TargetName="grid">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.2">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <BackEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <DoubleAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.RenderTransform).(CompositeTransform.ScaleY)" Storyboard.TargetName="grid">
+                <EasingDoubleKeyFrame KeyTime="0" Value="1"/>
+                <EasingDoubleKeyFrame KeyTime="0:0:0.5" Value="1.2">
+                    <EasingDoubleKeyFrame.EasingFunction>
+                        <BackEase EasingMode="EaseOut"/>
+                    </EasingDoubleKeyFrame.EasingFunction>
+                </EasingDoubleKeyFrame>
+            </DoubleAnimationUsingKeyFrames>
+            <ColorAnimationUsingKeyFrames Storyboard.TargetProperty="(Shape.Fill).(SolidColorBrush.Color)" Storyboard.TargetName="ellipse">
+                <EasingColorKeyFrame KeyTime="0" Value="#FFFFC406"/>
+                <EasingColorKeyFrame KeyTime="0:0:0.5" Value="#FFFFA302"/>
+            </ColorAnimationUsingKeyFrames>
+        </Storyboard>
     </UserControl.Resources>
 
     <Grid x:Name="grid" Tapped="addPressed" RenderTransformOrigin="0.5,0.5">
+
         <Grid.RenderTransform>
             <CompositeTransform/>
         </Grid.RenderTransform>
+        <Grid x:Name="ShadowGrid" />
         <Ellipse x:Name="ellipse" 
                  Width="100" 
                  Height="100" 
@@ -89,7 +112,6 @@
             <Ellipse.RenderTransform>
                 <CompositeTransform/>
             </Ellipse.RenderTransform>
-
         </Ellipse>
 
         <TextBlock x:Name="textBlock"  
@@ -98,8 +120,7 @@
                    Width="100" 
                    Height="60" 
                    Margin="0,0,0,0" 
-                   TextAlignment="Center"
-                   
+                   TextAlignment="Center"       
                    FontFamily="ms-appx:/Assets/GothaProBol.otf#Gotham Pro">
             <Run Text="ADD"/>
             <LineBreak/>
@@ -110,8 +131,7 @@
                Height="50"
                Source="ms-appx:///Assets/qrCode.jpg"
                Visibility="Collapsed"
-               
-               />
+                />
 
     </Grid>
 </UserControl>

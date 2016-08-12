@@ -2,13 +2,16 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Numerics;
 using System.Runtime.InteropServices.WindowsRuntime;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.UI;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
 using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Hosting;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
@@ -34,6 +37,28 @@ namespace IrtPhotos.Source
             this.RenderTransform = _transform;
             this.ManipulationDelta += AddImageButton_ManipulationDelta;
             this.ManipulationCompleted += AddImageButton_ManipulationCompleted;
+            ellipse.Loaded += Ellipse_Loaded;
+             
+        }
+
+        private void Ellipse_Loaded(object sender, RoutedEventArgs e)
+        {
+            addShadow();
+            attention.Begin();
+        }
+
+        private void addShadow()
+        {
+            var compositor = ElementCompositionPreview.GetElementVisual(ShadowGrid).Compositor;
+            var spriteVisual = compositor.CreateSpriteVisual();
+            spriteVisual.Size = new Vector2((float)ellipse.RenderSize.Width, (float)ellipse.RenderSize.Height);
+            var dropShadow = compositor.CreateDropShadow();
+            dropShadow.Offset = new Vector3((float)ellipse.RenderSize.Width/2, (float)ellipse.RenderSize.Height / 2, 0);
+            dropShadow.Color = Color.FromArgb(127, 0, 0, 0);
+            dropShadow.BlurRadius = 30;
+            dropShadow.Mask = ellipse.GetAlphaMask();
+            spriteVisual.Shadow = dropShadow;
+            ElementCompositionPreview.SetElementChildVisual(ShadowGrid, spriteVisual);
         }
 
         private void AddImageButton_ManipulationCompleted(object sender, ManipulationCompletedRoutedEventArgs e)
@@ -124,6 +149,7 @@ namespace IrtPhotos.Source
         {
            // scanAnimation.Begin();
         }
+
 
 
     }

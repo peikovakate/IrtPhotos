@@ -200,7 +200,7 @@
             </DoubleAnimationUsingKeyFrames>
 
             <ObjectAnimationUsingKeyFrames Storyboard.TargetProperty="(UIElement.Visibility)" Storyboard.TargetName="textBlock">
-                <DiscreteObjectKeyFrame KeyTime="0:0:1">
+                <DiscreteObjectKeyFrame KeyTime="0:0:0.1">
                     <DiscreteObjectKeyFrame.Value>
                         <Visibility>Collapsed</Visibility>
                     </DiscreteObjectKeyFrame.Value>

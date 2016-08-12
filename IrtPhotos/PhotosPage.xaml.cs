@@ -26,7 +26,7 @@ namespace IrtPhotos
         private List<IrtImage> _images;
         private readonly string _url;
         private static string[] _link = { "ms-appx:///nature.jpeg", "ms-appx:///colors.jpg", "ms-appx:///sailboat.jpg" };
-        private int i = 0;
+
 
 
         public PhotosPage()
@@ -34,7 +34,9 @@ namespace IrtPhotos
             this.InitializeComponent();
            
             addImButton._backgroundGrid = BackgroundGrid;
+            Canvas.SetZIndex(addImButton, 1000);
             addImButton.DoubleTapped += AddImButton_DoubleTapped;
+            
             var transform = (CompositeTransform)(addImButton.RenderTransform);
             transform.TranslateX = -1000;
 
@@ -51,12 +53,12 @@ namespace IrtPhotos
 
         private void AddImage(string link)
         {    
-          
-            i++;
-            var image = new IrtImage(BackgroundGrid);
+            var image = new IrtImage(PhotosGrid);
             image.LoadImage(link);
-            image.I = i;
+
         }
+
+
 
     }
 }

@@ -28,7 +28,7 @@ namespace IrtPhotos.Source
         private Grid _grid;
         private double d;
         private Grid _shadowGrid;
-        private Grid _shadowOnTopGrid;
+        private Rectangle _shadowOnTopRect;
         private Grid _bluredGrid;
         private Storyboard _deletingAnim;
         private Storyboard _imageAppearence;
@@ -38,7 +38,6 @@ namespace IrtPhotos.Source
       
         private CompositeEffect _effect;
         private const float blurAmount = 40;
-        public int I { get; set; }
         private readonly Grid _backgroundGrid;
         private const double K = 0.5;
         private string _link;
@@ -47,7 +46,6 @@ namespace IrtPhotos.Source
         Rectangle r;
         private CloseAnimation closeAnim;
 
-        bool isBlured = false;
         private const float borderWidth = 80;
         private float MinScale = 0.2f;
 
@@ -57,7 +55,9 @@ namespace IrtPhotos.Source
         Pointer pointer;
         bool stop = false;
         SpriteVisual blurVisual;
-        SpriteVisual shadowOnTopVisual;
+
+        private int realWidth;
+        private int realHeight;
 
         public IrtImage(Grid back)
         {
@@ -65,7 +65,7 @@ namespace IrtPhotos.Source
 
             _grid = new Grid();
             _shadowGrid = new Grid();
-            _shadowOnTopGrid = new Grid();
+            _shadowOnTopRect = new Rectangle();
             _bluredGrid = new Grid();
 
             _grid.Children.Add(_bluredGrid);
@@ -91,7 +91,6 @@ namespace IrtPhotos.Source
             _grid.ManipulationStarting += Canvas_ManipulationStarting;
             _grid.ManipulationCompleted += Canvas_ManipulationCompleted;
             _grid.ManipulationDelta += Canvas_ManipulationDelta;
-            //_grid.DoubleTapped += Canvas_DoubleTapped;
             _grid.RenderTransform = _transform;
             _grid.ManipulationMode = ManipulationModes.All;
             _grid.RenderTransformOrigin = new Point(0.5, 0.5);
@@ -101,11 +100,13 @@ namespace IrtPhotos.Source
             image = new Image();
             r = new Rectangle(); //rectangle for image frame
             r.Fill = new SolidColorBrush(Colors.White);
-            r.RadiusX = borderWidth/2;
+            r.RadiusX = borderWidth / 2;
             r.RadiusY = borderWidth / 2;
+            _shadowOnTopRect.RadiusX = borderWidth / 2;
+            _shadowOnTopRect.RadiusY = borderWidth / 2;
             _bluredGrid.Children.Add(r);
             _bluredGrid.Children.Add(image);
-            _bluredGrid.Children.Add(_shadowOnTopGrid);
+            _bluredGrid.Children.Add(_shadowOnTopRect);
             _backgroundGrid.Children.Add(_grid);     
         }
 
@@ -142,10 +143,6 @@ namespace IrtPhotos.Source
             _backgroundGrid.Children.Remove(_grid);
         }
 
-        private int realWidth;
-        private int realHeight;
-
-
         public void LoadImage(string link)
         {
             _link = link;
@@ -159,10 +156,11 @@ namespace IrtPhotos.Source
 
                 r.Width = realWidth + borderWidth* 2;
                 r.Height = realHeight + borderWidth* 2;
+                _shadowOnTopRect.Width = r.Width;
+                _shadowOnTopRect.Height = r.Height;
                
                 _grid.Height = r.Height+20;
                 _grid.Width = r.Width+20;
-
                 image.Width = realWidth;
             };
 
@@ -184,13 +182,6 @@ namespace IrtPhotos.Source
 
             _grid.RenderTransform = _transform;
         }
-
-        //private void Canvas_DoubleTapped(object sender, DoubleTappedRoutedEventArgs e)
-        //{
-        //    _transform.ScaleX = 0.3;
-        //    _transform.ScaleY = 0.3;
-        //    removeClose();
-        //}
         
         private void Canvas_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
@@ -296,9 +287,9 @@ namespace IrtPhotos.Source
             if (!_grid.Children.Contains(closeAnim))
             {
                 _grid.Children.Add(closeAnim);
-                
-                addShadowOnTop();
-                addBlur();
+
+                _shadowOnTopRect.Fill = new SolidColorBrush(Color.FromArgb(127, 0, 0, 0));
+                addBlurAnim();
             }
         }
 
@@ -307,10 +298,8 @@ namespace IrtPhotos.Source
             if (_grid.Children.Contains(closeAnim))
             {
                 _grid.Children.Remove(closeAnim);
-                isBlured = false;
-
-                blurVisual.Dispose();
-                shadowOnTopVisual.Dispose();
+                //blurVisual.Dispose();
+                removeBlurAnim();
             }
         }
 
@@ -322,12 +311,12 @@ namespace IrtPhotos.Source
         }
 
         private void Canvas_ManipulationStarting(object sender, ManipulationStartingRoutedEventArgs e)
-        {
-            Canvas.SetZIndex(e.Container, I);
+        { 
             foreach (var item in _backgroundGrid.Children)
             {
-                Canvas.SetZIndex(item, Canvas.GetZIndex(item) - 1);
+                Canvas.SetZIndex(item, 0);
             }
+            Canvas.SetZIndex(e.Container, 1);
         }
 
         void AddShadow()
@@ -343,53 +332,100 @@ namespace IrtPhotos.Source
             ElementCompositionPreview.SetElementChildVisual(_shadowGrid, spriteVisual);
         }
 
-        void addBlur()
+        void addBlurAnim()
         {
-            if (blurVisual != null)
-            {
-                blurVisual.Dispose();
-            }
-            var gridVisual = ElementCompositionPreview.GetElementVisual(_bluredGrid);
-            var compositor = gridVisual.Compositor;
-            blurVisual = compositor.CreateSpriteVisual();
+            var closeVisual = ElementCompositionPreview.GetElementVisual(closeAnim);
+            var shadowVisual = ElementCompositionPreview.GetElementVisual(_shadowOnTopRect);
 
-            blurVisual.Size = new Vector2(
-              (float)_bluredGrid.ActualWidth,
-              (float)_bluredGrid.ActualHeight);
+            closeVisual.CenterPoint =
+              new Vector3(
+                (float)closeAnim.ActualWidth / 2.0f,
+                (float)closeAnim.ActualHeight / 2.0f,
+                0.0f);
 
-            GaussianBlurEffect blurEffect = new GaussianBlurEffect()
+            var compositor = closeVisual.Compositor;
+
+            var rotatingAnim = compositor.CreateScalarKeyFrameAnimation();
+            rotatingAnim.InsertKeyFrame(0.0f, 0.0f);
+            rotatingAnim.InsertKeyFrame(0.5f, 360.0f);
+            rotatingAnim.Duration = TimeSpan.FromSeconds(3);
+
+            var shadowAnim = compositor.CreateScalarKeyFrameAnimation();
+            shadowAnim.InsertKeyFrame(0.0f, 0.0f);
+            shadowAnim.InsertKeyFrame(0.5f, 1.0f);
+            shadowAnim.Duration = TimeSpan.FromSeconds(3);
+
+            closeVisual.StartAnimation("RotationAngleInDegrees", rotatingAnim);
+
+            shadowVisual.StartAnimation("Opacity", shadowAnim);
+
+            var blur = new GaussianBlurEffect()
             {
+                Name = "Blur", // Name needed here so we can animate it.
                 BorderMode = EffectBorderMode.Hard,
-                Source = new CompositionEffectSourceParameter("source"),
-                BlurAmount = 10
+                BlurAmount = 0.0f,
+                Source = new CompositionEffectSourceParameter("source")
             };
+            var effectFactory = compositor.CreateEffectFactory(blur,
+              new string[] { "Blur.BlurAmount" });
 
-            var effectFactory = compositor.CreateEffectFactory(blurEffect);
             var effectBrush = effectFactory.CreateBrush();
             effectBrush.SetSourceParameter("source", compositor.CreateBackdropBrush());
 
+            blurVisual = compositor.CreateSpriteVisual();
+            blurVisual.Size = new Vector2(
+             (float) _bluredGrid.ActualWidth, (float)_bluredGrid.ActualHeight);
+
             blurVisual.Brush = effectBrush;
+
             ElementCompositionPreview.SetElementChildVisual(_bluredGrid, blurVisual);
+            var exprAnimation = compositor.CreateExpressionAnimation(
+              "rectangle.RotationAngleInDegrees / 36");
+
+            exprAnimation.SetReferenceParameter("rectangle", closeVisual);
+            effectBrush.StartAnimation("Blur.BlurAmount", exprAnimation);
+
         }
 
-        void addShadowOnTop()
+        void removeBlurAnim()
         {
-            if (shadowOnTopVisual != null)
+
+            var shadowVisual = ElementCompositionPreview.GetElementVisual(_shadowOnTopRect);
+
+            var compositor = shadowVisual.Compositor;
+
+            var shadowAnim = compositor.CreateScalarKeyFrameAnimation();
+            shadowAnim.InsertKeyFrame(0.0f, 1.0f);
+            shadowAnim.InsertKeyFrame(0.5f, 0.0f);
+            shadowAnim.Duration = TimeSpan.FromSeconds(3);
+            
+            shadowVisual.StartAnimation("Opacity", shadowAnim);
+
+            var blur = new GaussianBlurEffect()
             {
-                shadowOnTopVisual.Dispose();
-            }
-            var t = _transform;
-            var compositor = ElementCompositionPreview.GetElementVisual(_shadowOnTopGrid).Compositor;
-            shadowOnTopVisual = compositor.CreateSpriteVisual();
-            shadowOnTopVisual.Size = new Vector2((float)r.RenderSize.Width, (float)r.RenderSize.Height);
-            var dropShadow = compositor.CreateDropShadow();
-            dropShadow.Offset = new Vector3(10, 10, 0);
-            dropShadow.Color = Color.FromArgb(127, 0, 0, 0);
-            dropShadow.Mask = r.GetAlphaMask();
-            dropShadow.BlurRadius = 10;
-            shadowOnTopVisual.Shadow = dropShadow;
-            ElementCompositionPreview.SetElementChildVisual(_shadowOnTopGrid, shadowOnTopVisual);
-            _grid.RenderTransform = t;
+                Name = "Blur", // Name needed here so we can animate it.
+                BorderMode = EffectBorderMode.Hard,
+                BlurAmount = 100.0f,
+                Source = new CompositionEffectSourceParameter("source")
+            };
+            var effectFactory = compositor.CreateEffectFactory(blur,
+              new string[] { "Blur.BlurAmount" });
+
+            var effectBrush = effectFactory.CreateBrush();
+            effectBrush.SetSourceParameter("source", compositor.CreateBackdropBrush());
+
+            blurVisual = compositor.CreateSpriteVisual();
+            blurVisual.Size = new Vector2(
+             (float)_bluredGrid.ActualWidth, (float)_bluredGrid.ActualHeight);
+
+            blurVisual.Brush = effectBrush;
+
+            ElementCompositionPreview.SetElementChildVisual(_bluredGrid, blurVisual);
+            var exprAnimation = compositor.CreateExpressionAnimation(
+              "rectangle.Opacity");
+
+            exprAnimation.SetReferenceParameter("rectangle", shadowVisual);
+            effectBrush.StartAnimation("Blur.BlurAmount", exprAnimation);
         }
 
     }

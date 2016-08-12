@@ -38,7 +38,8 @@ namespace IrtPhotos.Source
             this.ManipulationDelta += AddImageButton_ManipulationDelta;
             this.ManipulationCompleted += AddImageButton_ManipulationCompleted;
             ellipse.Loaded += Ellipse_Loaded;
-             
+            turnToButton.SpeedRatio = 2;
+            turnToQr.SpeedRatio = 2;
         }
 
         private void Ellipse_Loaded(object sender, RoutedEventArgs e)

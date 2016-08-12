@@ -127,8 +127,7 @@
     <Content Include="Assets\Close.png" />
     <Content Include="Assets\Hand_icon.png" />
     <Content Include="Assets\irtBackground.jpg" />
-    <Content Include="Assets\qr.png" />
-    <Content Include="Assets\qrCode.jpg" />
+    <Content Include="Assets\qrCode.png" />
     <Content Include="colors.jpg" />
     <Content Include="nature.jpeg" />
     <Content Include="Properties\Default.rd.xml" />

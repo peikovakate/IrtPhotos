@@ -37,5 +37,10 @@ namespace IrtPhotos.Source
         {
             return imageDeleting;
         }
+
+        public Storyboard getImageScale()
+        {
+            return imageScale;
+        }
     }
 }

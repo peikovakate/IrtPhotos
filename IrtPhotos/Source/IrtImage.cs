@@ -59,6 +59,8 @@ namespace IrtPhotos.Source
         private int realWidth;
         private int realHeight;
 
+        Storyboard _scaleAnim;
+
         public IrtImage(Grid back)
         {
             _backgroundGrid = back;
@@ -76,6 +78,7 @@ namespace IrtPhotos.Source
             _imageAppearence = animation.getImageAppearing();
             _deletingAnim = animation.getImageDeleting();
             _appearence = animation.getAppearing();
+            _scaleAnim = animation.getImageScale();
 
             _imageAppearence.SpeedRatio = 2;
             _appearence.SpeedRatio = 2;
@@ -107,7 +110,9 @@ namespace IrtPhotos.Source
             _bluredGrid.Children.Add(r);
             _bluredGrid.Children.Add(image);
             _bluredGrid.Children.Add(_shadowOnTopRect);
-            _backgroundGrid.Children.Add(_grid);     
+            _backgroundGrid.Children.Add(_grid);
+
+ 
         }
 
         private void _grid_PointerReleased(object sender, PointerRoutedEventArgs e)
@@ -172,6 +177,12 @@ namespace IrtPhotos.Source
             Storyboard.SetTarget(_imageAppearence.Children[2], _grid);
             _appearence.Begin();
             _imageAppearence.Begin();
+            _scaleAnim.Completed += _scaleAnim_Completed;
+        }
+
+        private void _scaleAnim_Completed(object sender, object e)
+        {
+            _transform = (CompositeTransform)_grid.RenderTransform;
         }
 
         private void ImageAppearence_Completed(object sender, object e)
@@ -183,61 +194,44 @@ namespace IrtPhotos.Source
             _grid.RenderTransform = _transform;
         }
         
+        private double calcProjectionX(double rotation)
+        {
+            double angle = 0;
+            if (Math.Abs(rotation) % 180 < 90)
+            {
+                angle = ((Math.Abs(rotation) % 90) / 360 * 2 * Math.PI);
+            }
+            else
+            {
+                angle = ((90 - Math.Abs(rotation) % 90) / 360 * 2 * Math.PI);
+            }
+            return (_grid.Width * Math.Cos(angle) + _grid.Height * Math.Sin(angle)) * _transform.ScaleX;
+        }
+
+        private double calcProjectionY(double rotation)
+        {
+            double angle = 0;
+            if (Math.Abs(rotation) % 180 < 90)
+            {
+                angle = ((Math.Abs(rotation) % 90) / 360 * 2 * Math.PI);
+            }
+            else
+            {
+                angle = ((90 - Math.Abs(rotation) % 90) / 360 * 2 * Math.PI);
+            }
+            return (_grid.Width * Math.Sin(angle) + _grid.Height * Math.Cos(angle)) * _transform.ScaleY;
+        }
+
         private void Canvas_ManipulationDelta(object sender, ManipulationDeltaRoutedEventArgs e)
         {
             if (e.Container == null) return;
 
-            _transform.Rotation += e.Delta.Rotation;
 
-            double angle = 0;
-            if (Math.Abs(_transform.Rotation) % 180 < 90)
+            var potentialRotation = _transform.Rotation + e.Delta.Rotation;
+            if (calcProjectionX(potentialRotation)<_backgroundGrid.ActualWidth && 
+                calcProjectionY(potentialRotation)< _backgroundGrid.ActualHeight)
             {
-                angle = ((Math.Abs(_transform.Rotation) % 90) / 360 * 2 * Math.PI);
-            }else
-            {
-                angle = ((90 - Math.Abs(_transform.Rotation) % 90) / 360 * 2 * Math.PI);
-            }
- 
-            double distX = Math.Abs(_backgroundGrid.ActualWidth / 2) - Math.Abs(_transform.TranslateX)
-                - (_grid.Width * Math.Cos(angle) + _grid.Height*Math.Sin(angle))* _transform.ScaleX / 2;
-
-            if (distX < 0.0)
-            {
-                if (pointer.IsInContact && remPointer != pointer)
-                {
-                    return;
-                }
-
-                _direction.X = !_direction.X;
-                if (_transform.TranslateX < 0)
-                {
-                    _transform.TranslateX -= distX;
-                }
-                else
-                {
-                    _transform.TranslateX += distX;
-                }
-            }
-
-            double distY = Math.Abs(_backgroundGrid.ActualHeight / 2) - Math.Abs(_transform.TranslateY)
-                - (_grid.Width * Math.Sin(angle) + _grid.Height * Math.Cos(angle)) * _transform.ScaleY / 2;
-
-            if (distY < 0)
-            {
-                if (pointer.IsInContact && remPointer != pointer)
-                {
-                    return;
-                }
-
-                _direction.Y = !_direction.Y;
-                if (_transform.TranslateY < 0)
-                {
-                    _transform.TranslateY -= distY;
-                }
-                else
-                {
-                    _transform.TranslateY += distY;
-                }
+                _transform.Rotation += e.Delta.Rotation;
             }
 
             var tX = e.Delta.Translation.X;
@@ -248,13 +242,55 @@ namespace IrtPhotos.Source
                 tY *= K;
             }
 
-            if (!_direction.X)
+            double projectionX = calcProjectionX(_transform.Rotation);
+            double distX = Math.Abs(_backgroundGrid.ActualWidth / 2) - Math.Abs(_transform.TranslateX)
+                - projectionX / 2;
+
+            if (distX < 0.0)
             {
-                _transform.TranslateX += tX;
+                if (!(pointer.IsInContact && remPointer != pointer))
+                {
+                    _direction.X = !_direction.X;
+                }
+                
+                if (_transform.TranslateX < 0)
+                {
+                    _transform.TranslateX -= distX;
+                }
+                else
+                {
+                    _transform.TranslateX += distX;
+                }
             }
-            else
+
+                if (!_direction.X)
+                {
+                    _transform.TranslateX += tX;
+                }
+                else
+                {
+                    _transform.TranslateX -= tX;
+                }
+
+            double projectionY = calcProjectionY(_transform.Rotation);
+            double distY = Math.Abs(_backgroundGrid.ActualHeight / 2) - Math.Abs(_transform.TranslateY)
+                - projectionY / 2;
+
+            if (distY < 0)
             {
-                _transform.TranslateX -= tX;
+                if (!(pointer.IsInContact && remPointer != pointer))
+                {
+                    _direction.Y = !_direction.Y;
+                }
+         
+                if (_transform.TranslateY < 0)
+                {
+                    _transform.TranslateY -= distY;
+                }
+                else
+                {
+                    _transform.TranslateY += distY;
+                }
             }
 
             if (!_direction.Y)
@@ -266,7 +302,10 @@ namespace IrtPhotos.Source
                 _transform.TranslateY -= tY;
             }
 
-            if (_transform.ScaleX * e.Delta.Scale >= MinScale && _transform.ScaleX * e.Delta.Scale <= 1)
+            if (_transform.ScaleX * e.Delta.Scale >= MinScale && 
+                _transform.ScaleX * e.Delta.Scale <= 1 && 
+                projectionX * e.Delta.Scale < (_backgroundGrid.ActualWidth-10) &&
+                projectionY * e.Delta.Scale < (_backgroundGrid.ActualHeight-10))
             {
                 _transform.ScaleX *= e.Delta.Scale;
                 _transform.ScaleY *= e.Delta.Scale;
@@ -282,14 +321,21 @@ namespace IrtPhotos.Source
             }
         }
 
-        void addClose()
+        async void addClose()
         {
             if (!_grid.Children.Contains(closeAnim))
             {
+                _scaleAnim.Stop();
                 _grid.Children.Add(closeAnim);
 
                 _shadowOnTopRect.Fill = new SolidColorBrush(Color.FromArgb(127, 0, 0, 0));
                 addBlurAnim();
+                await Task.Delay(2000);
+                removeClose();
+
+                Storyboard.SetTarget(_scaleAnim.Children[0], _grid);
+                Storyboard.SetTarget(_scaleAnim.Children[1], _grid);
+                _scaleAnim.Begin();
             }
         }
 

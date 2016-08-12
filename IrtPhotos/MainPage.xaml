@@ -264,6 +264,6 @@
             <LineBreak/>
             <Run Text="IMAGE"/>
         </TextBlock>
-        <Image x:Name="qrImage"  Source="Assets/qrCode.jpg" Stretch="Uniform" Margin="0, 0, 0, 50"  Width="150" Height="150" Visibility="Collapsed" PointerPressed="goToSecondPage"/>
+        <Image x:Name="qrImage"  Source="Assets/qrCode.png" Stretch="Uniform" Margin="0, 0, 0, 50"  Width="150" Height="150" Visibility="Collapsed" PointerPressed="goToSecondPage"/>
     </Grid>
 </Page>
